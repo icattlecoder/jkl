@@ -55,22 +55,22 @@ sudo install -t /usr/local/bin jkl
 ```
 Usage: jkl [OPTION]... [SOURCE]
 
-      --auto           re-generates the site when files are modified
-      --base-url       serve website from a given base URL
-      --source         changes the dir where Jekyll will look to transform files
-      --destination    changes the dir where Jekyll will write files to
-      --server         starts a server that will host your _site directory
-      --server-port    changes the port that the Jekyll server will run on
-      --qiniu          copies the _site directory to Qiniu Cloud Storage
-      --s3             copies the _site directory to s3
-  -v, --verbose        runs Jekyll with verbose output
-  -h, --help           display this help and exit
+      --auto            re-generates the site when files are modified
+      --base-url        serve website from a given base URL
+      --source          changes the dir where Jekyll will look to transform files
+      --destination     changes the dir where Jekyll will write files to
+      --server          starts a server that will host your _site directory
+      --server-port     changes the port that the Jekyll server will run on
+      --qiniu           copies the _site directory to Qiniu Cloud Storage
+      --s3              copies the _site directory to s3
+  -v, --verbose         runs Jekyll with verbose output
+  -h, --help            display this help and exit
 
 Examples:
-  jkl                  generates site from current working dir
-  jkl --server         generates site and serves at localhost:4000
-  jkl /path/to/site    generates site from source dir /path/to/site
-  jkl --qiniu          copies the _site directory to Qiniu Cloud Storage
+  jkl                   generates site from current working dir
+  jkl --server          generates site and serves at localhost:4000
+  jkl /path/to/site     generates site from source dir /path/to/site
+  jkl --qiniu --verbose copies the _site directory to Qiniu Cloud Storage
 ```
 
 ### Auto Generation

@@ -157,7 +157,7 @@ func (s *Site) DeployToQiniu(key, secret, bucket string) error {
 		}
 
 		ret := new(q6io.PutRet)
-		extra := &q6io.PutExtra{MimeType: mime.TypeByExtension(filepath.Ext(rel))}
+		extra := &q6io.PutExtra{MimeType: mime.TypeByExtension(filepath.Ext(rel)), Bucket: bucket}
 
 		// try to upload the file ... sometimes this fails due to QiniuCloudStorage
 		// issues. If so, we'll re-try
