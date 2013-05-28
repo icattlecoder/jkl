@@ -42,7 +42,7 @@ func ParseConfig(path string) (Config, error) {
 }
 
 func parseConfig(data []byte) (Config, error) {
-	conf := map[string] interface{} { }
+	conf := map[string]interface{}{}
 	err := goyaml.Unmarshal(data, &conf)
 	if err != nil {
 		return nil, err
@@ -53,28 +53,46 @@ func parseConfig(data []byte) (Config, error) {
 
 // DeployConfig represents the key-value data in the _jekyll_s3.yml file
 // used for deploying a website to Amazon's S3.
-type DeployConfig struct {
+type DeployS3Config struct {
 	Key    string `s3_id`
 	Secret string `s3_secret`
 	Bucket string `s3_bucket`
 }
 
+// DeployConfig represents the key-value data in the _jekyll_qiniu.yml file
+// used for deploying a website to QiniuCloudStorage.
+type Deploy76Config struct {
+	Key    string `access_key`
+	Secret string `secret_key`
+	Bucket string `bucket`
+}
+
 // ParseDeployConfig will parse a YAML file at the given path and return
 // a key-value DeployConfig structure.
-func ParseDeployConfig(path string) (*DeployConfig, error) {
+
+func ParseDeployS3Config(path string) (*DeployS3Config, error) {
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return parseDeployConfig(b)
-}
-
-func parseDeployConfig(data []byte) (*DeployConfig, error) {
-	conf := DeployConfig{}
-	err := goyaml.Unmarshal(data, &conf)
+	conf := DeployS3Config{}
+	err = goyaml.Unmarshal(b, &conf)
 	if err != nil {
 		return nil, err
 	}
 
+	return &conf, nil
+}
+
+func ParseDeploy76Config(path string) (*Deploy76Config, error) {
+	b, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	conf := Deploy76Config{}
+	err = goyaml.Unmarshal(b, &conf)
+	if err != nil {
+		return nil, err
+	}
 	return &conf, nil
 }

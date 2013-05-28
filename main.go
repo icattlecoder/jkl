@@ -29,7 +29,10 @@ var (
 	auto = flag.Bool("auto", false, "")
 
 	// deploys the website to S3
-	deploy = flag.Bool("s3", false, "")
+	deploys3 = flag.Bool("s3", false, "")
+
+	// deploys the website to QiniuCloudStorage
+	deploy76 = flag.Bool("qiniu", false, "")
 
 	// serves the website from the specified base url
 	baseurl = flag.String("base-url", "", "")
@@ -37,11 +40,20 @@ var (
 	// s3 access key
 	s3key = flag.String("s3_key", "", "")
 
+	// qiniu access key
+	q6key = flag.String("qiniu_key", "", "")
+
 	// s3 secret key
 	s3secret = flag.String("s3_secret", "", "")
 
+	// qiniu secret key
+	q6secret = flag.String("qiniu_secret", "", "")
+
 	// s3 bucket name
 	s3bucket = flag.String("s3_bucket", "", "")
+
+	// qiniu bucket name
+	q6bucket = flag.String("qiniu_bucket", "", "")
 
 	// runs Jekyll with verbose output if True
 	verbose = flag.Bool("verbose", false, "")
@@ -86,7 +98,9 @@ func main() {
 	}
 
 	// Set any site variables that were overriden / provided in the cli args
-	if *baseurl != "" || site.Conf.Get("baseurl") == nil { site.Conf.Set("baseurl", *baseurl) }
+	if *baseurl != "" || site.Conf.Get("baseurl") == nil {
+		site.Conf.Set("baseurl", *baseurl)
+	}
 
 	// Generate the static website
 	if err := site.Generate(); err != nil {
@@ -95,24 +109,48 @@ func main() {
 	}
 
 	// Deploys the static website to S3
-	if *deploy {
+	if *deploys3 {
 
-		var conf *DeployConfig
+		var conf *DeployS3Config
 		// Read the S3 configuration details if not provided as
 		// command line
 		if *s3key == "" {
 			path := filepath.Join(site.Src, "_jekyll_s3.yml")
-			conf, err = ParseDeployConfig(path)
+			conf, err = ParseDeployS3Config(path)
 			if err != nil {
 				fmt.Println(err)
 				os.Exit(1)
 			}
 		} else {
 			// else use the command line args
-			conf = &DeployConfig{*s3key, *s3secret, *s3bucket}
+			conf = &DeployS3Config{*s3key, *s3secret, *s3bucket}
 		}
 
-		if err := site.Deploy(conf.Key, conf.Secret, conf.Bucket); err != nil {
+		if err := site.DeployToS3(conf.Key, conf.Secret, conf.Bucket); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}
+
+	// Deploys the static website to QiniuCloudStorage
+	if *deploy76 {
+
+		var conf *Deploy76Config
+		// Read the Qiniu configuration details if not provided as
+		// command line
+		if *q6key == "" {
+			path := filepath.Join(site.Src, "_jekyll_qiniu.yml")
+			conf, err = ParseDeploy76Config(path)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		} else {
+			// else use the command line args
+			conf = &Deploy76Config{*q6key, *q6secret, *q6bucket}
+		}
+
+		if err := site.DeployToQiniu(conf.Key, conf.Secret, conf.Bucket); err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
