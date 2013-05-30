@@ -35,9 +35,19 @@ Source of above sites:
 * <https://github.com/drone/blog.drone.io>
 * <https://github.com/qiniu/docs.qiniu.com>
 
+
 ## Installation
 
-You can visit the [jkl project's downloads page](https://github.com/why404/jkl/tags) and select the binary distribution that matches your operating system and processor architecture.
+You can select the binary distribution that matches your operating system and processor architecture as bellow.
+
+* Mac OS X 64-bit [zip](http://gojkl.b1.qiniudn.com/jkl-darwin-amd64.zip) [tar.gz](http://gojkl.b1.qiniudn.com/jkl-darwin-amd64.tar.gz)
+* Mac OS X 32-bit [zip](http://gojkl.b1.qiniudn.com/jkl-darwin-386.zip) [tar.gz](http://gojkl.b1.qiniudn.com/jkl-darwin-386.tar.gz)
+* Linux 64-bit [zip](http://gojkl.b1.qiniudn.com/jkl-linux-amd64.zip) [tar.gz](http://gojkl.b1.qiniudn.com/jkl-linux-amd64.tar.gz)
+* Linux 32-bit [zip](http://gojkl.b1.qiniudn.com/jkl-linux-386.zip) [tar.gz](http://gojkl.b1.qiniudn.com/jkl-linux-386.tar.gz)
+* FreeBSD 64-bit [zip](http://gojkl.b1.qiniudn.com/jkl-freebsd-amd64.zip) [tar.gz](http://gojkl.b1.qiniudn.com/jkl-freebsd-amd64.tar.gz)
+* FreeBSD 32-bit [zip](http://gojkl.b1.qiniudn.com/jkl-freebsd-386.zip) [tar.gz](http://gojkl.b1.qiniudn.com/jkl-freebsd-386.tar.gz)
+* Windows 64-bit [zip](http://gojkl.b1.qiniudn.com/jkl-windows-amd64.zip) [tar.gz](http://gojkl.b1.qiniudn.com/jkl-windows-amd64.tar.gz)
+* Windows 32-bit [zip](http://gojkl.b1.qiniudn.com/jkl-windows-386.zip) [tar.gz](http://gojkl.b1.qiniudn.com/jkl-windows-386.tar.gz)
 
 If you want to install from source you should [install the Go tools](http://golang.org/doc/install) first.
 
@@ -51,6 +61,7 @@ go get github.com/qiniu/api
 go get github.com/russross/blackfriday
 go get github.com/howeyc/fsnotify
 go get launchpad.net/goyaml
+go get launchpad.net/gocheck
 go get launchpad.net/goamz/aws
 go get launchpad.net/goamz/s3
 ```
@@ -140,6 +151,7 @@ jkl --qiniu \
 ```
 
 Runs **jkl** with verbose output you can use the `--verbose` option.
+
 
 ### Deploy to Amazon S3
 
