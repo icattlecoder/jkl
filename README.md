@@ -90,7 +90,7 @@ Usage: jkl [OPTION]... [SOURCE]
       --qiniu-secret        secret key use for qiniu authentication
       --qiniu-bucket        name of the qiniu bucket
 
-  -v, --verbose             runs Jekyll with verbose output
+  -v, --verbose             runs jkl with verbose output
   -h, --help                display this help and exit
 
 Examples:
@@ -137,6 +137,8 @@ jkl --qiniu \
     --qiniu-bucket=YOUR_QINIU_BUCKET
 ```
 
+Runs **jkl** with verbose output you can use the `--verbose` option.
+
 ### Deploy to Amazon S3
 
 If you want to deploy to [Amazon S3](http://aws.amazon.com/s3/) you must include a `_jekyll_s3.yml` file that specifies your AWS key, secret and bucket:
@@ -165,6 +167,9 @@ jkl --s3 \
     --s3-secret=YOUR_AWS_S3_SECRET_ACCESS_KEY \
     --s3-bucket=YOUR_AWS_S3_BUCKET
 ```
+
+Runs **jkl** with verbose output you can use the `--verbose` option.
+
 
 ## Documentation
 
