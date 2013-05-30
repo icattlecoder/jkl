@@ -45,9 +45,16 @@ go get github.com/howeyc/fsnotify
 go get launchpad.net/goyaml
 go get launchpad.net/goamz/aws
 go get launchpad.net/goamz/s3
+```
 
+Compile it form source
+
+```
+git clone git://github.com/why404/jkl.git
+cd jkl
 go build
 ```
+
 Once you have compiled `jkl` you can install with the following command:
 
 ```
