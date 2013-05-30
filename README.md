@@ -51,7 +51,7 @@ go build
 Once you have compiled `jkl` you can install with the following command:
 
 ```
-sudo cp ./jkl /usr/local/bin
+sudo mv ./jkl /usr/local/bin
 sudo chmod +x /usr/local/bin/jkl
 ```
 
