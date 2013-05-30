@@ -4,6 +4,9 @@
 *.so
 *.*~
 
+# Mac OSX
+.DS_Store
+
 # Folders
 _obj
 _test

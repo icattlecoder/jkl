@@ -23,37 +23,37 @@ var (
 	server = flag.Bool("server", false, "")
 
 	// the port that the Jekyll server will run on
-	port = flag.String("server_port", ":4000", "")
+	port = flag.String("port", ":4000", "")
 
 	// re-generates the site when files are modified.
 	auto = flag.Bool("auto", false, "")
 
-	// deploys the website to S3
-	deploys3 = flag.Bool("s3", false, "")
+	// serves the website from the specified base url
+	baseurl = flag.String("base-url", "", "")
 
 	// deploys the website to QiniuCloudStorage
 	deploy76 = flag.Bool("qiniu", false, "")
 
-	// serves the website from the specified base url
-	baseurl = flag.String("base-url", "", "")
-
-	// s3 access key
-	s3key = flag.String("s3_key", "", "")
-
 	// qiniu access key
-	q6key = flag.String("qiniu_key", "", "")
-
-	// s3 secret key
-	s3secret = flag.String("s3_secret", "", "")
+	q6key = flag.String("qiniu-key", "", "")
 
 	// qiniu secret key
-	q6secret = flag.String("qiniu_secret", "", "")
-
-	// s3 bucket name
-	s3bucket = flag.String("s3_bucket", "", "")
+	q6secret = flag.String("qiniu-secret", "", "")
 
 	// qiniu bucket name
-	q6bucket = flag.String("qiniu_bucket", "", "")
+	q6bucket = flag.String("qiniu-bucket", "", "")
+
+	// deploys the website to S3
+	deploys3 = flag.Bool("s3", false, "")
+
+	// s3 access key
+	s3key = flag.String("s3-key", "", "")
+
+	// s3 secret key
+	s3secret = flag.String("s3-secret", "", "")
+
+	// s3 bucket name
+	s3bucket = flag.String("s3-bucket", "", "")
 
 	// runs Jekyll with verbose output if True
 	verbose = flag.Bool("verbose", false, "")
@@ -114,7 +114,7 @@ func main() {
 		var conf *DeployS3Config
 		// Read the S3 configuration details if not provided as
 		// command line
-		if *s3key == "" {
+		if *s3key == "" || *s3secret == "" || *s3bucket == "" {
 			path := filepath.Join(site.Src, "_jekyll_s3.yml")
 			conf, err = ParseDeployS3Config(path)
 			if err != nil {
@@ -138,7 +138,7 @@ func main() {
 		var conf *Deploy76Config
 		// Read the Qiniu configuration details if not provided as
 		// command line
-		if *q6key == "" {
+		if *q6key == "" || *q6secret == "" || *q6bucket == "" {
 			path := filepath.Join(site.Src, "_jekyll_qiniu.yml")
 			conf, err = ParseDeploy76Config(path)
 			if err != nil {
@@ -244,24 +244,33 @@ func logf(msg string, args ...interface{}) {
 var usage = func() {
 	fmt.Println(`Usage: jkl [OPTION]... [SOURCE]
 
-      --auto           re-generates the site when files are modified
-      --base-url       serve website from a given base URL
-      --source         changes the dir where Jekyll will look to transform files
-      --destination    changes the dir where Jekyll will write files to
-      --server         starts a server that will host your _site directory
-      --server-port    changes the port that the Jekyll server will run on
-      --s3             copies the _site directory to s3
-      --s3_key         aws access key use for s3 authentication
-      --s3_secret      aws secret key use for s3 authentication
-      --s3_bucket      name of the s3 bucket
-  -v, --verbose        runs Jekyll with verbose output
-  -h, --help           display this help and exit
+      --auto                re-generates the site when files are modified
+      --base-url            serve website from a given base URL
+      --source              changes the dir where Jekyll will look to transform files
+      --destination         changes the dir where Jekyll will write files to
+      --server              starts a server that will host your _site directory
+      --port                changes the port that the Jekyll server will run on
+      --s3                  copies the _site directory to s3
+      --s3-key              aws access key use for s3 authentication
+      --s3-secret           aws secret key use for s3 authentication
+      --s3-bucket           name of the s3 bucket
+      --qiniu               copies the _site directory to Qiniu Cloud Storage
+      --qiniu-key           access key use for qiniu authentication
+      --qiniu-secret        secret key use for qiniu authentication
+      --qiniu-bucket        name of the qiniu bucket
+
+  -v, --verbose             runs Jekyll with verbose output
+  -h, --help                display this help and exit
 
 Examples:
-  jkl                 generates site from current working directory
-  jkl --server        generates site and serves at localhost:4000
-  jkl /path/to/site   generates site from source dir /path/to/site
+  jkl                       generates site from current working directory
+  jkl /path/to/site         generates site from source dir /path/to/site
+  jkl --server              generates site and serves at localhost:4000
+  jkl --server --port=:4567 generates site and serves at localhost:4567
+  jkl --s3 --verbose        copies the _site directory to s3
+  jkl --qiniu --verbose     copies the _site directory to Qiniu Cloud Storage
 
-Report bugs to <https://github.com/bradrydzewski/jkl/issues>
-Jekyll home page: <https://github.com/bradrydzewski/jkl>`)
+Report bugs to <https://github.com/why404/jkl/issues>
+jkl home page: <https://github.com/why404/jkl>
+Jekyll home page: <http://jekyllrb.com/>`)
 }
