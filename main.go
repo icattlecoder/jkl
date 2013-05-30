@@ -35,7 +35,7 @@ var (
 	deploy76 = flag.Bool("qiniu", false, "")
 
 	// qiniu config
-	q6cfg = flag.String("qiniu-config", "", "")
+	q6config = flag.String("qiniu-config", "", "")
 
 	// qiniu access key
 	q6key = flag.String("qiniu-key", "", "")
@@ -50,7 +50,7 @@ var (
 	deploys3 = flag.Bool("s3", false, "")
 
 	// s3 config
-	s3cfg = flag.String("s3-config", "", "")
+	s3config = flag.String("s3-config", "", "")
 
 	// s3 access key
 	s3key = flag.String("s3-key", "", "")
@@ -122,8 +122,8 @@ func main() {
 		// command line
 		if *s3key == "" || *s3secret == "" || *s3bucket == "" {
 			path := filepath.Join(site.Src, "_jekyll_s3.yml")
-			if *s3cfg != "" {
-				path = s3cfg
+			if *s3config != "" {
+				path = *s3config
 			}
 			conf, err = ParseDeployS3Config(path)
 			if err != nil {
@@ -149,8 +149,8 @@ func main() {
 		// command line
 		if *q6key == "" || *q6secret == "" || *q6bucket == "" {
 			path := filepath.Join(site.Src, "_jekyll_qiniu.yml")
-			if *q6cfg != "" {
-				path = q6cfg
+			if *q6config != "" {
+				path = *q6config
 			}
 			conf, err = ParseDeploy76Config(path)
 			if err != nil {
@@ -263,12 +263,12 @@ var usage = func() {
       --server              starts a server that will host your _site directory
       --port                changes the port that the Jekyll server will run on
       --s3                  copies the _site directory to s3
-      --s3-config           /path/to/_jkl_s3.yml that specifies your AWS key, secret and bucket
+      --s3-config           path to the _jekyll_s3.yml file that specifies your AWS key, secret and bucket
       --s3-key              aws access key use for s3 authentication
       --s3-secret           aws secret key use for s3 authentication
       --s3-bucket           name of the s3 bucket
       --qiniu               copies the _site directory to Qiniu Cloud Storage
-      --qiniu-config        /path/to/_jkl_qiniu.yml that specifies your Qiniu key, secret and bucket
+      --qiniu-config        path to the _jekyll_qiniu.yml file that specifies your Qiniu key, secret and bucket
       --qiniu-key           access key use for qiniu authentication
       --qiniu-secret        secret key use for qiniu authentication
       --qiniu-bucket        name of the qiniu bucket

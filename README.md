@@ -80,12 +80,12 @@ Usage: jkl [OPTION]... [SOURCE]
       --server              starts a server that will host your _site directory
       --port                changes the port that the Jekyll server will run on
       --s3                  copies the _site directory to s3
-      --s3-config           /path/to/_jkl_s3.yml that specifies your AWS key, secret and bucket
+      --s3-config           path to the _jekyll_s3.yml file that specifies your AWS key, secret and bucket
       --s3-key              aws access key use for s3 authentication
       --s3-secret           aws secret key use for s3 authentication
       --s3-bucket           name of the s3 bucket
       --qiniu               copies the _site directory to Qiniu Cloud Storage
-      --qiniu-config        /path/to/_jkl_qiniu.yml that specifies your Qiniu key, secret and bucket
+      --qiniu-config        path to the _jekyll_qiniu.yml file that specifies your Qiniu key, secret and bucket
       --qiniu-key           access key use for qiniu authentication
       --qiniu-secret        secret key use for qiniu authentication
       --qiniu-bucket        name of the qiniu bucket
