@@ -1,3 +1,5 @@
+## Introduction
+
 **jkl** is a static site generator written in [Go](http://www.golang.org),
 based on [Jekyll](https://github.com/mojombo/jekyll)
 
@@ -33,7 +35,7 @@ Source of above sites:
 * <https://github.com/drone/blog.drone.io>
 * <https://github.com/qiniu/docs.qiniu.com>
 
-### Installation
+## Installation
 
 If you want to install from source you should [install the Go tools](http://golang.org/doc/install) first.
 
@@ -66,7 +68,7 @@ sudo mv ./jkl /usr/local/bin
 sudo chmod +x /usr/local/bin/jkl
 ```
 
-### Usage
+## Usage
 
 ```
 Usage: jkl [OPTION]... [SOURCE]
@@ -78,10 +80,12 @@ Usage: jkl [OPTION]... [SOURCE]
       --server              starts a server that will host your _site directory
       --port                changes the port that the Jekyll server will run on
       --s3                  copies the _site directory to s3
+      --s3-config           /path/to/_jkl_s3.yml that specifies your AWS key, secret and bucket
       --s3-key              aws access key use for s3 authentication
       --s3-secret           aws secret key use for s3 authentication
       --s3-bucket           name of the s3 bucket
       --qiniu               copies the _site directory to Qiniu Cloud Storage
+      --qiniu-config        /path/to/_jkl_qiniu.yml that specifies your Qiniu key, secret and bucket
       --qiniu-key           access key use for qiniu authentication
       --qiniu-secret        secret key use for qiniu authentication
       --qiniu-bucket        name of the qiniu bucket
@@ -98,15 +102,14 @@ Examples:
   jkl --qiniu --verbose     copies the _site directory to Qiniu Cloud Storage
 ```
 
-### Auto Generation
+## Auto Generation
 
 If you are running the website in server mode, with the `--server` flag, you can
 also instruct `jkl` to auto-recompile you website by adding the `--auto` flag.
 
-### Deploy to Qiniu Cloud Storage
+## Deploy to Qiniu Cloud Storage
 
-In order to deploy to [Qiniu Cloud Storage](http://www.qiniu.com/) you must include a `_jekyll_qiniu.yml` file in your
-site's root directory that specifies your Qiniu key, secret and bucket:
+In order to deploy to [Qiniu Cloud Storage](http://www.qiniu.com/) you must include a `_jekyll_qiniu.yml` file that specifies your Qiniu key, secret and bucket:
 
 ```
 access_key: YOUR_QINIU_ACCESS_KEY
@@ -114,30 +117,56 @@ secret_key: YOUR_QINIU_SECRET_KEY
 bucket: YOUR_QINIU_BUCKET
 ```
 
-Run 
+If the `_jekyll_qiniu.yml` file in your site's root directory, you can run 
 
 ```
 jkl --qiniu
 ```
+otherwise, run this:
+
+```
+jkl --qiniu --qiniu-config=/path/to/_jekyll_qiniu.yml
+```
+
+If you do not want to use the config file, you can do it as the following command:
+
+```
+jkl --qiniu \ 
+    --qiniu-key=YOUR_QINIU_ACCESS_KEY \
+    --qiniu-secret=YOUR_QINIU_SECRET_KEY \
+    --qiniu-bucket=YOUR_QINIU_BUCKET
+```
 
 ### Deploy to Amazon S3
 
-If you want to deploy to [Amazon S3](http://aws.amazon.com/s3/) you must include a `_jekyll_s3.yml` file in your
-site's root directory that specifies your AWS key, secret and bucket:
+If you want to deploy to [Amazon S3](http://aws.amazon.com/s3/) you must include a `_jekyll_s3.yml` file that specifies your AWS key, secret and bucket:
 
 ```
 s3_id: YOUR_AWS_S3_ACCESS_KEY_ID
 s3_secret: YOUR_AWS_S3_SECRET_ACCESS_KEY
-s3_bucket: your.blog.bucket.com
+s3_bucket: YOUR_AWS_S3_BUCKET
 ```
-
-Run 
+If the `_jekyll_s3.yml` file in your site's root directory, you can run 
 
 ```
 jkl --s3
 ```
+otherwise, run this:
 
-### Documentation
+```
+jkl --s3 --s3-config=/path/to/_jekyll_s3.yml
+```
+
+If you do not want to use the config file, you can do it as the following command:
+
+```
+jkl --s3 \ 
+    --s3-key=YOUR_AWS_S3_ACCESS_KEY_ID \
+    --s3-secret=YOUR_AWS_S3_SECRET_ACCESS_KEY \
+    --s3-bucket=YOUR_AWS_S3_BUCKET
+```
+
+## Documentation
 
 See the official [Jekyll wiki](https://github.com/mojombo/jekyll/wiki)
 ... just remember that you are using Go templates instead of Liquid templates.
