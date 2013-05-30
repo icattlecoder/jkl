@@ -37,6 +37,8 @@ Source of above sites:
 
 ## Installation
 
+You can visit the [jkl project's downloads page](https://github.com/why404/jkl/tags) and select the binary distribution that matches your operating system and processor architecture.
+
 If you want to install from source you should [install the Go tools](http://golang.org/doc/install) first.
 
 In order to compile with `go build` you will first need to download
@@ -61,7 +63,7 @@ cd jkl
 go build
 ```
 
-Once you have compiled `jkl` you can install with the following command:
+Once you have compiled or downloaded `jkl` you can install with the following command:
 
 ```
 sudo mv ./jkl /usr/local/bin
