@@ -27,7 +27,11 @@ Sites built with jkl:
 * Drone.io Blog: <http://blog.drone.io>
 * Qiniu Cloud Storage Documentation: <http://docs.qiniu.com>
 
---------------------------------------------------------------------------------
+Source of above sites:
+
+* <https://github.com/drone/docs.drone.io>
+* <https://github.com/drone/blog.drone.io>
+* <https://github.com/qiniu/docs.qiniu.com>
 
 ### Installation
 
