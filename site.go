@@ -138,11 +138,6 @@ func (s *Site) DeployToS3(user, pass, url string) error {
 func (s *Site) DeployToQiniu(key, secret, bucket string) error {
 	q6cfg.ACCESS_KEY = key
 	q6cfg.SECRET_KEY = secret
-	policy := q6rs.PutPolicy{
-		Scope:   bucket,
-		Expires: 3600,
-	}
-	uptoken := policy.Token()
 
 	// walks _site directory and uploads file to QiniuCloudStorage
 	walker := func(fn string, fi os.FileInfo, err error) error {
@@ -155,6 +150,12 @@ func (s *Site) DeployToQiniu(key, secret, bucket string) error {
 		if err != nil {
 			return err
 		}
+
+		policy := q6rs.PutPolicy{
+			Scope:   bucket + ":" + rel,
+			Expires: 60,
+		}
+		uptoken := policy.Token()
 
 		ret := new(q6io.PutRet)
 		extra := &q6io.PutExtra{MimeType: mime.TypeByExtension(filepath.Ext(rel)), Bucket: bucket}
