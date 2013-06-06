@@ -120,11 +120,13 @@ func (s *Site) DeployToS3(user, pass, url string) error {
 			return err
 		}
 
+		key := filepath.ToSlash(rel)
+
 		// try to upload the file ... sometimes this fails due to amazon
 		// issues. If so, we'll re-try
-		if err := b.Put(rel, content, typ, s3.PublicRead); err != nil {
+		if err := b.Put(key, content, typ, s3.PublicRead); err != nil {
 			time.Sleep(100 * time.Millisecond) // sleep so that we don't immediately retry
-			return b.Put(rel, content, typ, s3.PublicRead)
+			return b.Put(key, content, typ, s3.PublicRead)
 		}
 
 		// file upload was a success, return nil
@@ -160,11 +162,13 @@ func (s *Site) DeployToQiniu(key, secret, bucket string) error {
 		ret := new(q6io.PutRet)
 		extra := &q6io.PutExtra{MimeType: mime.TypeByExtension(filepath.Ext(rel)), Bucket: bucket}
 
+		key := filepath.ToSlash(rel)
+
 		// try to upload the file ... sometimes this fails due to QiniuCloudStorage
 		// issues. If so, we'll re-try
-		if err := q6io.PutFile(nil, ret, uptoken, rel, fn, extra); err != nil {
+		if err := q6io.PutFile(nil, ret, uptoken, key, fn, extra); err != nil {
 			time.Sleep(100 * time.Millisecond) // sleep so that we don't immediately retry
-			return q6io.PutFile(nil, ret, uptoken, rel, fn, extra)
+			return q6io.PutFile(nil, ret, uptoken, key, fn, extra)
 		}
 
 		// file upload was a success, return nil
