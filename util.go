@@ -3,8 +3,8 @@ package main
 import (
 	"bytes"
 	"io"
+	"io/ioutil"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -22,10 +22,17 @@ func appendExt(fn, ext string) string {
 // sub directories.
 //
 // TODO use native Go code to copy file to enable Windows support
-func copyTo(from, to string) error {
+func copyTo(from, to string) (err error) {
 	os.MkdirAll(filepath.Dir(to), 0755)
-	if err := exec.Command("cp", from, to).Run(); err != nil {
-		return err
+	// read whole the file
+	b, err := ioutil.ReadFile(from)
+	if err != nil {
+		return
+	}
+	// write whole the body
+	err = ioutil.WriteFile(to, b, 0644)
+	if err != nil {
+		return
 	}
 	return nil
 }
