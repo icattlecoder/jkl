@@ -153,16 +153,15 @@ func (s *Site) DeployToQiniu(key, secret, bucket string) error {
 			return err
 		}
 
+		key := filepath.ToSlash(rel)
 		policy := q6rs.PutPolicy{
-			Scope:   bucket + ":" + rel,
+			Scope:   bucket + ":" + key,
 			Expires: 60,
 		}
 		uptoken := policy.Token()
 
 		ret := new(q6io.PutRet)
 		extra := &q6io.PutExtra{MimeType: mime.TypeByExtension(filepath.Ext(rel)), Bucket: bucket}
-
-		key := filepath.ToSlash(rel)
 
 		// try to upload the file ... sometimes this fails due to QiniuCloudStorage
 		// issues. If so, we'll re-try
