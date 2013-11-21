@@ -7,6 +7,7 @@ import (
 	"launchpad.net/goyaml"
 	"os"
 	"path"
+	"path/filepath"
 	"sort"
 	"strings"
 )
@@ -70,14 +71,38 @@ func readPage(filename string) (page map[string]interface{}, err error) {
 	return
 }
 
-func skip(name string) bool {
+func skip2(d os.FileInfo) bool {
+	skipfiles := []string{"img", "index.markdown", "index.md"}
+	name := d.Name()
+	for _, f := range skipfiles {
+		if f == name {
+			return true
+		}
+	}
+	if d.IsDir() && name != "img" {
+		return false
+	}
+	slash := filepath.ToSlash(name)
+	if strings.Contains(slash, ".markdown") || strings.Contains(slash, ".md") {
+		return false
+	}
+	return true
+}
+
+func skip(dir, name string) bool {
 	skipfiles := []string{"img", "index.markdown", "index.md"}
 	for _, f := range skipfiles {
 		if f == name {
 			return true
 		}
 	}
-	return false
+	slash := filepath.ToSlash(name)
+
+	if strings.Contains(slash, ".") && (strings.Contains(slash, ".markdown") || strings.Contains(slash, ".md")) {
+		return false
+	} else {
+		return true
+	}
 }
 
 func rread(dir string) (items []menuItem) {
@@ -90,7 +115,7 @@ func rread(dir string) (items []menuItem) {
 
 	l := 0
 	for _, d := range fs {
-		if !skip(d.Name()) {
+		if !skip2(d) {
 			l++
 		}
 	}
@@ -99,7 +124,7 @@ func rread(dir string) (items []menuItem) {
 
 	i := 0
 	for _, d := range fs {
-		if skip(d.Name()) {
+		if skip2(d) {
 			continue
 		}
 		n := path.Join(dir, d.Name())
@@ -121,24 +146,11 @@ func rread(dir string) (items []menuItem) {
 				}
 			}
 			item.Child = rread(n)
-		} else if strings.Contains(n, ".markdown") || strings.Contains(n, "md") {
+		} else if strings.Contains(n, ".markdown") || strings.Contains(n, ".md") {
 			page, err := readPage(n)
 			if err != nil {
 				continue
 			}
-			/*
-				c, err := ioutil.ReadFile(n)
-				if err != nil {
-					os.Exit(-1)
-				}
-				page := map[string]interface{}{}
-				err = goyaml.Unmarshal(c, &page)
-				if err != nil {
-					fmt.Println("error=", err)
-					os.Exit(-1)
-					continue
-				}
-			*/
 			if str, ok := page["title"].(string); ok {
 				item.Title = str
 			}
@@ -149,6 +161,8 @@ func rread(dir string) (items []menuItem) {
 				item.Order = 0
 			}
 
+		} else {
+			continue
 		}
 		items[i] = item
 		i++
