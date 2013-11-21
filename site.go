@@ -2,6 +2,8 @@ package main
 
 import (
 	"bytes"
+	"fmt"
+	q6dig "github.com/qiniu/api/auth/digest"
 	q6cfg "github.com/qiniu/api/conf"
 	q6io "github.com/qiniu/api/io"
 	q6rs "github.com/qiniu/api/rs"
@@ -11,6 +13,7 @@ import (
 	"mime"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/template"
 	"time"
 )
@@ -23,14 +26,16 @@ var (
 )
 
 type Site struct {
-	Src  string // Directory where Jekyll will look to transform files
-	Dest string // Directory where Jekyll will write files to
-	Conf Config // Configuration date from the _config.yml file
-
-	posts []Page             // Posts thet need to be generated
-	pages []Page             // Pages that need to be generated
-	files []string           // Static files to get copied to the destination
-	templ *template.Template // Compiled templates
+	Src     string                 // Directory where Jekyll will look to transform files
+	Dest    string                 // Directory where Jekyll will write files to
+	Conf    Config                 // Configuration date from the _config.yml file
+	data    map[string]interface{} //_data
+	posts   []Page                 // Posts thet need to be generated
+	pages   []Page                 // Pages that need to be generated
+	PP      map[string][]*Page
+	files   []string           // Static files to get copied to the destination
+	include map[string]string  // _includes
+	templ   *template.Template // Compiled templates
 }
 
 func NewSite(src, dest string) (*Site, error) {
@@ -156,12 +161,13 @@ func (s *Site) DeployToQiniu(key, secret, bucket string) error {
 		key := filepath.ToSlash(rel)
 		policy := q6rs.PutPolicy{
 			Scope:   bucket + ":" + key,
-			Expires: 60,
+			Expires: 3600 * 24,
 		}
-		uptoken := policy.Token()
+		mac := q6dig.Mac{q6cfg.ACCESS_KEY, ([]byte)(secret)}
+		uptoken := policy.Token(&mac)
 
 		ret := new(q6io.PutRet)
-		extra := &q6io.PutExtra{MimeType: mime.TypeByExtension(filepath.Ext(rel)), Bucket: bucket}
+		extra := &q6io.PutExtra{MimeType: mime.TypeByExtension(filepath.Ext(rel))}
 
 		// try to upload the file ... sometimes this fails due to QiniuCloudStorage
 		// issues. If so, we'll re-try
@@ -184,6 +190,10 @@ func (s *Site) read() error {
 	// Lists of templates (_layouts, _includes) that we find thate
 	// will need to be compiled
 	layouts := []string{}
+	includes := make(map[string]string)
+
+	s.data = make(map[string]interface{})
+	s.PP = make(map[string][]*Page)
 
 	// func to walk the jekyll directory structure
 	walker := func(fn string, fi os.FileInfo, err error) error {
@@ -206,21 +216,41 @@ func (s *Site) read() error {
 		case isTemplate(rel):
 			layouts = append(layouts, fn)
 
-		// Parse Posts
-		case isPost(rel):
-			post, err := ParsePost(rel)
-			if err != nil {
-				return err
+		case isIncludes(rel):
+			k := rel[10 : len(rel)-5]
+			bs, _ := ioutil.ReadFile(rel)
+			s.include[k] = string(bs)
+
+		//Parse Data
+		case isData(rel):
+			var res interface{}
+			err := parseData(rel, &res)
+			if err == nil {
+				k := rel[6 : len(rel)-5]
+				s.data[k] = res
+			} else {
+				fmt.Println("err=", err)
 			}
-			// TODO: this is a hack to get the posts in rev chronological order
-			s.posts = append([]Page{post}, s.posts...) //s.posts, post)
+
+			/*
+				// Parse Posts
+				case isPost(rel):
+					post, err := ParsePost(rel)
+					if err != nil {
+						return err
+					}
+					// TODO: this is a hack to get the posts in rev chronological order
+					s.posts = append([]Page{post}, s.posts...) //s.posts, post)
+			*/
 
 		// Parse Pages
 		case isPage(rel):
+			ss := strings.Split(rel, "/")
 			page, err := ParsePage(rel)
 			if err != nil {
 				return err
 			}
+			s.PP[ss[0]] = append(s.PP[ss[0]], &page)
 			s.pages = append(s.pages, page)
 
 		// Move static files, no processing required
@@ -229,11 +259,16 @@ func (s *Site) read() error {
 		}
 		return nil
 	}
+	s.include = includes
+	// s.data = datas
+
+	// fmt.Println("data=",s.data)
 
 	// Walk the diretory recursively to get a list of all posts,
 	// pages, templates and static files.
 	err := filepath.Walk(s.Src, walker)
 	if err != nil {
+		fmt.Println("err=", err)
 		return err
 	}
 
@@ -313,6 +348,9 @@ func (s *Site) writePages() error {
 
 		// add document body to the map
 		data["content"] = content
+		data["includes"] = s.include
+		data["data"] = s.data
+		data["pages"] = s.PP
 
 		// write the template to a buffer
 		// NOTE: if template is nil or empty, then we should parse the

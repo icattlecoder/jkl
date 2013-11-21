@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"bytes"
 	"io"
 	"io/ioutil"
@@ -60,10 +61,16 @@ func isTemplate(fn string) bool {
 		return false
 	case strings.HasPrefix(fn, "_layouts"):
 		return true
-	case strings.HasPrefix(fn, "_includes"):
-		return true
 	}
 	return false
+}
+
+func isIncludes(fn string) bool {
+	return strings.HasPrefix(fn, "_includes")
+}
+
+func isData(fn string) bool {
+	return strings.HasPrefix(fn, "_data")
 }
 
 // Return True if the markup is HTML.
@@ -138,6 +145,15 @@ func dirs(path string) (paths []string) {
 	})
 
 	return
+}
+
+func parseData(fn string,res interface{}) (err error) {
+	bs,err:=ioutil.ReadFile(fn)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(bs, res)
+	return err
 }
 
 // Removes the files extension. If the file has no extension the string is

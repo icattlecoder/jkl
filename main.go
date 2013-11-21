@@ -153,6 +153,7 @@ func main() {
 				path = *q6config
 			}
 			conf, err = ParseDeploy76Config(path)
+			fmt.Println("conf=", conf)
 			if err != nil {
 				fmt.Println(err)
 				os.Exit(1)

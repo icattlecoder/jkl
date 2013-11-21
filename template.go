@@ -8,21 +8,32 @@ import (
 // Additional functions available in Jekyll templates
 var funcMap = map[string]interface{}{
 
-	"capitalize":        capitalize,
-	"date_to_string":    dateToString,
-	"date_to_xmlschema": dateToXmlSchema,
-	"downcase":          lower,
-	"eq":                eq,
-	"newline_to_br":     newlineToBreak,
-	"replace":           replace,
-	"replace_first":     replaceFirst,
-	"remove":            remove,
-	"remove_first":      removeFirst,
-	"split":             split,
-	"strip_newlines":    stripNewlines,
-	"truncate":          truncate,
-	"truncatewords":     truncateWords,
-	"upcase":            upper,
+	"capitalize":         capitalize,
+	"date_to_string":     dateToString,
+	"date_to_xmlschema":  dateToXmlSchema,
+	"downcase":           lower,
+	"eq":                 eq,
+	"newline_to_br":      newlineToBreak,
+	"replace":            replace,
+	"replace_first":      replaceFirst,
+	"remove":             remove,
+	"remove_first":       removeFirst,
+	"split":              split,
+	"strip_newlines":     stripNewlines,
+	"truncate":           truncate,
+	"truncatewords":      truncateWords,
+	"upcase":             upper,
+	"isnot_nil_or_empty": isNotNilandEmpty,
+}
+
+//  判断数组是否为nil或都长度为0
+func isNotNilandEmpty(v interface{}) bool {
+	if s, ok := v.([]interface{}); ok {
+		if s != nil && len(s) > 0 {
+			return true
+		}
+	}
+	return false
 }
 
 // Capitalize words in the input sentence

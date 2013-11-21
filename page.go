@@ -25,6 +25,21 @@ func ParsePage(fn string) (Page, error) {
 	return parsePage(fn, c)
 }
 
+func SubString(str string) (substr string) {
+	// 将字符串的转换成[]rune
+	rs := []rune(str)
+	lth := len(rs)
+
+	begin := 0
+
+	if lth > 200 {
+		lth = 200
+	}
+	end := begin + lth
+	// 返回子串
+	return string(rs[begin:end])
+}
+
 // Helper function that creates a new Page from a byte array, parsing the
 // front-end YAML and the markup, and pre-calculating all page-level variables.
 func parsePage(fn string, c []byte) (Page, error) {
@@ -50,11 +65,14 @@ func parsePage(fn string, c []byte) (Page, error) {
 
 	// if markdown, convert to html
 	raw := parseContent(c)
+
 	if markdown {
 		page["content"] = string(blackfriday.MarkdownCommon(raw))
 	} else {
 		page["content"] = string(raw)
 	}
+
+	page["snapshot"] = page.GetString("snapshot")
 
 	if page["layout"] == nil {
 		page["layout"] = "default"
