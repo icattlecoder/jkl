@@ -70,6 +70,16 @@ func readPage(filename string) (page map[string]interface{}, err error) {
 	return
 }
 
+func skip(name string) bool {
+	skipfiles := []string{"img", "index.markdown", "index.md"}
+	for _, f := range skipfiles {
+		if f == name {
+			return true
+		}
+	}
+	return false
+}
+
 func rread(dir string) (items []menuItem) {
 
 	fs, err := ioutil.ReadDir(dir)
@@ -80,7 +90,7 @@ func rread(dir string) (items []menuItem) {
 
 	l := 0
 	for _, d := range fs {
-		if d.Name() != "img" {
+		if !skip(d.Name()) {
 			l++
 		}
 	}
@@ -89,7 +99,7 @@ func rread(dir string) (items []menuItem) {
 
 	i := 0
 	for _, d := range fs {
-		if d.Name() == "img" {
+		if skip(d.Name()) {
 			continue
 		}
 		n := path.Join(dir, d.Name())
