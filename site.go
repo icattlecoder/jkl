@@ -43,6 +43,10 @@ func NewSite(src, dest string) (*Site, error) {
 	// Parse the _config.yml file
 	path := filepath.Join(src, "_config.yml")
 	conf, err := ParseConfig(path)
+	defLayout := conf.GetString("defaultLayout")
+	if defLayout != "" {
+		DefaultLayout = defLayout
+	}
 	logf(MsgUsingConfig, path)
 	if err != nil {
 		return nil, err
@@ -231,17 +235,6 @@ func (s *Site) read() error {
 			} else {
 				fmt.Println("err=", err)
 			}
-
-			/*
-				// Parse Posts
-				case isPost(rel):
-					post, err := ParsePost(rel)
-					if err != nil {
-						return err
-					}
-					// TODO: this is a hack to get the posts in rev chronological order
-					s.posts = append([]Page{post}, s.posts...) //s.posts, post)
-			*/
 
 		// Parse Pages
 		case isPage(rel):

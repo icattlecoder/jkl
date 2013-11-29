@@ -5,11 +5,14 @@ import (
 	"io"
 	"io/ioutil"
 	"launchpad.net/goyaml"
+	"log"
 	"path/filepath"
 	"strings"
 
 	"github.com/russross/blackfriday"
 )
+
+var DefaultLayout = "default"
 
 // A Page represents the key-value pairs in a page or posts front-end YAML as
 // well as the markup in the body.
@@ -43,9 +46,9 @@ func SubString(str string) (substr string) {
 // Helper function that creates a new Page from a byte array, parsing the
 // front-end YAML and the markup, and pre-calculating all page-level variables.
 func parsePage(fn string, c []byte) (Page, error) {
-
 	page, err := parseMatter(c) //map[string] interface{} { }
 	if err != nil {
+		log.Println("parse Page:", fn)
 		return nil, err
 	}
 
@@ -75,7 +78,7 @@ func parsePage(fn string, c []byte) (Page, error) {
 	page["snapshot"] = page.GetString("snapshot")
 
 	if page["layout"] == nil {
-		page["layout"] = "default"
+		page["layout"] = DefaultLayout
 	}
 
 	// according to spec, Jekyll allows user to enter either category or

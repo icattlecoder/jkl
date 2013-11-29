@@ -144,6 +144,11 @@ func rread(dir string) (items []menuItem) {
 					item.Title = str
 					item.Href = n
 				}
+
+				if order, ok := page["order"].(int); ok {
+					item.Order = order
+				}
+
 			}
 			item.Child = rread(n)
 		} else if strings.Contains(n, ".markdown") || strings.Contains(n, ".md") {
