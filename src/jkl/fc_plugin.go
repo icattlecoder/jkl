@@ -116,11 +116,16 @@ func (f *FC) fc(site *Site) {
 		aurls[i] = k
 		i++
 	}
+	type context struct {
+		Context string `json:"c"`
+		LinkID  int    `json:"l"`
+	}
 
 	type tmp struct {
-		K string `json:"value"`
-		L []int  `json:"data"`
+		K string    `json:"value"`
+		L []context `json:"data"`
 	}
+
 	tt := make([]tmp, len(index))
 	j := 0
 	for k, v := range index {

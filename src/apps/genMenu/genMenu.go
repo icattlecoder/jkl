@@ -131,6 +131,9 @@ func rread(dir string) (items []menuItem) {
 		item := menuItem{}
 		if d.IsDir() {
 			page, err := readPage(path.Join(n, "index.markdown"))
+            if err !=nil{
+                page, err = readPage(path.Join(n, "index.md"))
+            }
 			if err != nil {
 				cc, err := ioutil.ReadFile(path.Join(n, nodeName))
 				if err != nil {
@@ -142,7 +145,7 @@ func rread(dir string) (items []menuItem) {
 			} else {
 				if str, ok := page["title"].(string); ok {
 					item.Title = str
-					item.Href = n
+					item.Href = n + "/"
 				}
 
 				if order, ok := page["order"].(int); ok {
@@ -159,7 +162,11 @@ func rread(dir string) (items []menuItem) {
 			if str, ok := page["title"].(string); ok {
 				item.Title = str
 			}
-			item.Href = n[0:len(n)-8] + "html"
+            if strings.Contains(n,".markdown"){
+                item.Href = n[0:len(n)-8] + "html"
+            }else{
+                item.Href = n[0:len(n)-2] + "html"
+            }
 			if ord, ok := page["order"].(int); ok {
 				item.Order = ord
 			} else {
