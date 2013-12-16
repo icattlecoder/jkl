@@ -166,17 +166,26 @@ func (s *Site) DeployToS3(user, pass, url string) error {
 }
 
 // Deploys a site to QiniuCloudStorage.
-func (s *Site) DeployToQiniu(key, secret, bucket string) error {
+func (s *Site) DeployToQiniu(key, secret, bucket, specFiles string) error {
 	q6cfg.ACCESS_KEY = key
 	q6cfg.SECRET_KEY = secret
+
+	files := strings.Split(specFiles, ",")
+
+	in := func(name string) bool {
+		for _, v := range files {
+			if strings.Contains(name, v) {
+				return true
+			}
+		}
+		return false
+	}
 
 	// walks _site directory and uploads file to QiniuCloudStorage
 	walker := func(fn string, fi os.FileInfo, err error) error {
 		if fi.IsDir() {
 			return nil
 		}
-		log.Println("upload:", fn)
-
 		rel, _ := filepath.Rel(s.Dest, fn)
 		if err != nil {
 			return err
@@ -193,12 +202,24 @@ func (s *Site) DeployToQiniu(key, secret, bucket string) error {
 		ret := new(q6io.PutRet)
 		extra := &q6io.PutExtra{MimeType: mime.TypeByExtension(filepath.Ext(rel))}
 
+		if len(files) > 0 {
+			if in(fn) {
+				log.Println("upload:", fn)
+				if err := q6io.PutFile(nil, ret, uptoken, key, fn, extra); err != nil {
+					time.Sleep(100 * time.Millisecond) // sleep so that we don't immediately retry
+					return q6io.PutFile(nil, ret, uptoken, key, fn, extra)
+				}
+			}
+		} else {
+			log.Println("upload:", fn)
+			if err := q6io.PutFile(nil, ret, uptoken, key, fn, extra); err != nil {
+				time.Sleep(100 * time.Millisecond) // sleep so that we don't immediately retry
+				return q6io.PutFile(nil, ret, uptoken, key, fn, extra)
+			}
+		}
+
 		// try to upload the file ... sometimes this fails due to QiniuCloudStorage
 		// issues. If so, we'll re-try
-		if err := q6io.PutFile(nil, ret, uptoken, key, fn, extra); err != nil {
-			time.Sleep(100 * time.Millisecond) // sleep so that we don't immediately retry
-			return q6io.PutFile(nil, ret, uptoken, key, fn, extra)
-		}
 
 		// file upload was a success, return nil
 		return nil
@@ -363,6 +384,8 @@ func (s *Site) writePages() error {
 		data["content"] = content
 		data["includes"] = s.include
 		data["data"] = s.data
+
+		data["time"] = time.Now().Unix()
 		data["pages"] = s.PP
 		if s.version != "" {
 			data["version"] = s.version

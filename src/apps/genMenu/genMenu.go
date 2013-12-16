@@ -74,18 +74,24 @@ func readPage(filename string) (page map[string]interface{}, err error) {
 func skip2(d os.FileInfo) bool {
 	skipfiles := []string{"img", "index.markdown", "index.md"}
 	name := d.Name()
+	if strings.Index(name, "_") == 0 {
+		return true
+	}
 	for _, f := range skipfiles {
 		if f == name {
 			return true
 		}
+
 	}
 	if d.IsDir() && name != "img" {
 		return false
 	}
+
 	slash := filepath.ToSlash(name)
 	if strings.Contains(slash, ".markdown") || strings.Contains(slash, ".md") {
 		return false
 	}
+
 	return true
 }
 
@@ -131,9 +137,9 @@ func rread(dir string) (items []menuItem) {
 		item := menuItem{}
 		if d.IsDir() {
 			page, err := readPage(path.Join(n, "index.markdown"))
-            if err !=nil{
-                page, err = readPage(path.Join(n, "index.md"))
-            }
+			if err != nil {
+				page, err = readPage(path.Join(n, "index.md"))
+			}
 			if err != nil {
 				cc, err := ioutil.ReadFile(path.Join(n, nodeName))
 				if err != nil {
@@ -162,11 +168,11 @@ func rread(dir string) (items []menuItem) {
 			if str, ok := page["title"].(string); ok {
 				item.Title = str
 			}
-            if strings.Contains(n,".markdown"){
-                item.Href = n[0:len(n)-8] + "html"
-            }else{
-                item.Href = n[0:len(n)-2] + "html"
-            }
+			if strings.Contains(n, ".markdown") {
+				item.Href = n[0:len(n)-8] + "html"
+			} else {
+				item.Href = n[0:len(n)-2] + "html"
+			}
 			if ord, ok := page["order"].(int); ok {
 				item.Order = ord
 			} else {

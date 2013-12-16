@@ -70,6 +70,11 @@ func (f *FC) fc(site *Site) {
 	//去除连续的换行符
 	delbr, _ := regexp.Compile("\\s{2,}")
 
+	type Context struct{
+		Cntx string
+		link string
+	}
+	
 	walker := func(fn string, bs []byte) {
 		rel, _ := filepath.Rel(root, fn)
 		segments := segmenter.Segment(bs)

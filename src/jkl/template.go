@@ -13,6 +13,7 @@ var funcMap = map[string]interface{}{
 	"date_to_xmlschema":  dateToXmlSchema,
 	"downcase":           lower,
 	"eq":                 eq,
+	"neq":                neq,
 	"newline_to_br":      newlineToBreak,
 	"replace":            replace,
 	"replace_first":      replaceFirst,
@@ -44,6 +45,11 @@ func capitalize(s string) string {
 // Checks if two values are equal
 func eq(v1 interface{}, v2 interface{}) bool {
 	return v1 == v2
+}
+
+// Checks if two values are not equal
+func neq(v1 interface{}, v2 interface{}) bool {
+	return v1 != v2
 }
 
 // Converts a date to a string

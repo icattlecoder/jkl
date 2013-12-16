@@ -46,6 +46,8 @@ var (
 	// qiniu bucket name
 	q6bucket = flag.String("qiniu-bucket", "", "")
 
+	q6uploadfiles = flag.String("qiniu-up-files", "", "")
+
 	// deploys the website to S3
 	deploys3 = flag.Bool("s3", false, "")
 
@@ -165,7 +167,7 @@ func main() {
 			conf = &Deploy76Config{*q6key, *q6secret, *q6bucket}
 		}
 
-		if err := site.DeployToQiniu(conf.Key, conf.Secret, conf.Bucket); err != nil {
+		if err := site.DeployToQiniu(conf.Key, conf.Secret, conf.Bucket, *q6uploadfiles); err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
