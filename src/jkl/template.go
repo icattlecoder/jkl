@@ -7,7 +7,6 @@ import (
 
 // Additional functions available in Jekyll templates
 var funcMap = map[string]interface{}{
-
 	"capitalize":         capitalize,
 	"date_to_string":     dateToString,
 	"date_to_xmlschema":  dateToXmlSchema,
@@ -25,6 +24,11 @@ var funcMap = map[string]interface{}{
 	"truncatewords":      truncateWords,
 	"upcase":             upper,
 	"isnot_nil_or_empty": isNotNilandEmpty,
+	"isstart_with":		  isStartWith, 
+}
+
+func isStartWith(str, sub string) bool {
+	return strings.Index(str, sub)==0
 }
 
 //  判断数组是否为nil或都长度为0

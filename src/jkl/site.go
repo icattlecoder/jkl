@@ -384,7 +384,6 @@ func (s *Site) writePages() error {
 		data["content"] = content
 		data["includes"] = s.include
 		data["data"] = s.data
-
 		data["time"] = time.Now().Unix()
 		data["pages"] = s.PP
 		if s.version != "" {
