@@ -26,7 +26,13 @@ var (
 	MsgGenerateFile = "Generating Page: %s"
 	MsgUploadFile   = "Uploading: %s"
 	MsgUsingConfig  = "Loading Config: %s"
+
+	mds map[string]string
 )
+
+func init() {
+	mds = make(map[string]string)
+}
 
 type Site struct {
 	Src     string                 // Directory where Jekyll will look to transform files
@@ -204,6 +210,9 @@ func (s *Site) DeployToQiniu(key, secret, bucket, specFiles string) error {
 
 		if len(files) > 0 {
 			if in(fn) {
+				if ext, ok := mds[fn]; ok {
+					modifyFileCanEdit(fn, rel, ext)
+				}
 				log.Println("upload:", fn)
 				if err := q6io.PutFile(nil, ret, uptoken, key, fn, extra); err != nil {
 					time.Sleep(100 * time.Millisecond) // sleep so that we don't immediately retry
@@ -226,6 +235,28 @@ func (s *Site) DeployToQiniu(key, secret, bucket, specFiles string) error {
 	}
 
 	return filepath.Walk(s.Dest, walker)
+}
+
+func modifyFileCanEdit(filename, rel, ext string) (err  error) {
+	buf, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return
+	}
+	str := string(buf)
+	beReplaced := `<span class="icon global_github_footer_sprited"></span>`
+	newFmt := `<a href="%s" target="_blank"><span class="icon global_github_footer_sprited"></span></a>`
+	var x string
+	if index := strings.LastIndex(rel, "."); index != -1 {
+		x = rel[:index]
+	}
+	editUrl := `https://github.com/qiniu/developer.qiniu.com/edit/master/` + x + ext
+	newBody := fmt.Sprintf(newFmt, editUrl)
+	log.Printf("%s => %s ok", rel, editUrl)
+	newFileCon := strings.Replace(str, beReplaced, newBody, 1)
+	if err = os.Remove(filename); err != nil {
+		return
+	}
+	return ioutil.WriteFile(filename, []byte(newFileCon), 0644)
 }
 
 // Helper function to traverse the source directory and identify all posts,
@@ -406,6 +437,9 @@ func (s *Site) writePages() error {
 			s.templ.ExecuteTemplate(&buf, layout, data)
 		}
 
+		if isMarkdown(page.GetExt()) && (page.GetLayout() == "docs" || page.GetLayout() == "default" ) {
+			mds[f] = page.GetExt()
+		}
 		if err := ioutil.WriteFile(f, buf.Bytes(), 0644); err != nil {
 			return err
 		}
